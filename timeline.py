@@ -1,6 +1,9 @@
 import os
 import datetime
 import pickle
+import sys
+import kivy
+
 
 class Entry:
     def __init__(self):
@@ -40,11 +43,6 @@ class Entry:
             timeline += child.timeline(indent=indent + 2)
         return timeline
 
-# Globals
-data_filepath = os.path.dirname(os.path.realpath(__file__)) + "\pickled_data.pkl"
-root = None
-DATE_FORMAT = "%d%m%Y%H%M%S"
-
 def write_data(data):
     with open(data_filepath, 'wb') as outfile:
         pickle.dump(data, outfile, pickle.HIGHEST_PROTOCOL)
@@ -60,7 +58,17 @@ def root_init():
 def root_save():
     write_data(root)
 
+# UI
+def load_ui():
+    print("test")
+
+# Globals
+data_filepath = os.path.dirname(os.path.realpath(__file__)) + "\pickled_data.pkl"
+root = None
+DATE_FORMAT = "%d%m%Y%H%M%S"
+
 def main():
-    print("nothing here yet...")
+    root_init()
+    load_ui()
 
 main()
