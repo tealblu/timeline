@@ -1,4 +1,4 @@
-from nicegui import ui
+
 import datetime
 
 class Entry:
@@ -22,12 +22,32 @@ class Entry:
             if child.date == date:
                 self.children.remove(child)
 
-    def listChildren(self):
+    def listChildren(self, indent=0):
         contentList = []
         for child in self.children:
-            contentList.append(child.content)
-
+            contentList.append(" " * indent + "- " + child.content)
+            contentList.extend(child.listChildren(indent=indent + 2))
         return contentList
 
+    def createTimeline(self, indent=0):
+        timeline = " " * indent + self.content + "\n"
+        for child in self.children:
+            timeline += child.createTimeline(indent=indent + 2)
+        return timeline
 
-root = Entry("17092000080100", "I was born today!") # Root entry is my birth, representing my whole lifetime
+
+root = Entry("17092000080100", "I was born today!")  # Root entry is my birth, representing my whole lifetime
+child1 = Entry("01012010120000", "Started school")
+child2 = Entry("01072015210000", "Graduated high school")
+child3 = Entry("01092020230000", "Started college")
+child4 = Entry("01052023220000", "Graduated college")
+child5 = Entry("01072023230000", "Started working")
+
+root.addChild(child1)
+child1.addChild(child2)
+root.addChild(child3)
+child3.addChild(child4)
+root.addChild(child5)
+
+timeline = root.createTimeline()
+print(timeline)
