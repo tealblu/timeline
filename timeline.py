@@ -1,5 +1,6 @@
-
+import os
 import datetime
+import pickle
 
 class Entry:
     def __init__(self):
@@ -30,24 +31,25 @@ class Entry:
         return contentList
 
     def createTimeline(self, indent=0):
-        timeline = " " * indent + self.content + "\n"
+        timeline = " " * indent + self.date.strftime("%d/%m/%Y %H:%M:%S") + ": " + self.content + "\n"
         for child in self.children:
             timeline += child.createTimeline(indent=indent + 2)
         return timeline
 
+# Globals
+data_filepath = os.path.dirname(os.path.realpath(__file__)) + "\pickled_data.pkl"
 
-root = Entry("17092000080100", "I was born today!")  # Root entry is my birth, representing my whole lifetime
-child1 = Entry("01012010120000", "Started school")
-child2 = Entry("01072015210000", "Graduated high school")
-child3 = Entry("01092020230000", "Started college")
-child4 = Entry("01052023220000", "Graduated college")
-child5 = Entry("01072023230000", "Started working")
+def write_data(data):
+    with open(data_filepath, 'wb') as outfile:
+        pickle.dump(data, outfile, pickle.HIGHEST_PROTOCOL)
 
-root.addChild(child1)
-child1.addChild(child2)
-root.addChild(child3)
-child3.addChild(child4)
-root.addChild(child5)
+def read_data():
+    with open(data_filepath, "rb") as infile:
+        return pickle.load(infile)
 
-timeline = root.createTimeline()
-print(timeline)
+def test():
+    root = read_data()
+    if root:
+        print(root.children)
+
+test()
