@@ -2,8 +2,9 @@ import os
 import datetime
 import pickle
 import sys
-import kivy
+from flask import *
 
+app = Flask(__name__)
 
 class Entry:
     def __init__(self):
@@ -38,7 +39,7 @@ class Entry:
         return contentList
 
     def timeline(self, indent=0):
-        timeline = " " * indent + self.date.strftime("%d/%m/%Y %H:%M:%S") + ": " + self.content + "\n"
+        timeline = " " * indent + self.date.strftime(DATE_FORMAT) + ": " + self.content + "\n"
         for child in self.children:
             timeline += child.timeline(indent=indent + 2)
         return timeline
@@ -58,6 +59,16 @@ def root_init():
 def root_save():
     write_data(root)
 
+def get_entry(entry, datecode):
+    if entry.date.strftime(DATE_FORMAT) == datecode:
+        return entry
+    else:
+        for child in entry.children:
+            result = get_entry(child, datecode)
+            if result:
+                return result
+    return None
+
 # UI
 def load_ui():
     print("test")
@@ -66,9 +77,40 @@ def load_ui():
 data_filepath = os.path.dirname(os.path.realpath(__file__)) + "\pickled_data.pkl"
 root = None
 DATE_FORMAT = "%d%m%Y%H%M%S"
+READABLE_DATE = "%d/%m/%Y %H:%M:%S"
 
+@app.route('/')
 def main():
-    root_init()
-    load_ui()
+    return 'Hello World!'
 
-main()
+@app.route('/timeline')
+def timeline():
+    root_init()
+    entry = root
+
+    return render_template("timeline.html", content=entry.timeline())
+
+@app.route('/timeline/entry/<dt>')
+def entry_detail(dt):
+    date_obj = datetime.datetime.strptime(dt, DATE_FORMAT)
+    return 'Entry detail page for ' + date_obj.strftime(READABLE_DATE)
+
+@app.route('/addentry/<datecode>', methods = ['POST', 'GET'])
+def add_entry(datecode):
+    root_init()
+    parent = get_entry(root, datecode) # get the parent from the url parameter
+
+    if request.method == 'POST': # on form submit
+        result = request.form
+
+        # Create the child from form elements
+        child = Entry(result["datecode"], result["content"])
+        parent.addChild(child)
+
+        root_save()
+        return render_template("timeline.html", content=root.timeline())
+    else:
+        return render_template("addentry.html", parent=datecode)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port='8000', debug=True)
