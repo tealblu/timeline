@@ -1,6 +1,6 @@
 import os
 import datetime
-import pickle
+import pickle5 as pickle
 import sys
 from flask import *
 
@@ -39,14 +39,14 @@ class Entry:
         return contentList
 
     def timeline(self, indent=0):
-        timeline = " " * indent + self.date.strftime(DATE_FORMAT) + ": " + self.content + "\n"
+        timeline = " " * indent + self.date.strftime(READABLE_DATE) + ": " + self.content + "\n"
         for child in self.children:
             timeline += child.timeline(indent=indent + 2)
         return timeline
 
 def write_data(data):
     with open(data_filepath, 'wb') as outfile:
-        pickle.dump(data, outfile, pickle.HIGHEST_PROTOCOL)
+        pickle.dump(data, outfile)
 
 def read_data():
     with open(data_filepath, "rb") as infile:
@@ -79,10 +79,12 @@ root = None
 DATE_FORMAT = "%d%m%Y%H%M%S"
 READABLE_DATE = "%d/%m/%Y %H:%M:%S"
 
+# redirect to root timeline
 @app.route('/')
 def main():
-    return 'Hello World!'
+    return redirect(url_for('timeline'))
 
+# display the root timeline
 @app.route('/timeline')
 def timeline():
     root_init()
@@ -90,11 +92,15 @@ def timeline():
 
     return render_template("timeline.html", content=entry.timeline())
 
+# display entry detail
+# <dt> is a datecode of form DATE_FORMAT
 @app.route('/timeline/entry/<dt>')
 def entry_detail(dt):
-    date_obj = datetime.datetime.strptime(dt, DATE_FORMAT)
-    return 'Entry detail page for ' + date_obj.strftime(READABLE_DATE)
+    root_init()
+    entry = get_entry(root, dt)
+    return render_template("entrydetail.html", entry=entry)
 
+# add entry to parent specified by <datecode>
 @app.route('/addentry/<datecode>', methods = ['POST', 'GET'])
 def add_entry(datecode):
     root_init()
@@ -112,5 +118,6 @@ def add_entry(datecode):
     else:
         return render_template("addentry.html", parent=datecode)
 
+# run the app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='8000', debug=True)
