@@ -1,8 +1,19 @@
 {% extends "layout.html" %} {% block content %}
-<h3>Root Entry Timeline</h3>
-<pre>
-    {% for line in content.split('\n') %}
-        <p> {{ line }} </p>
+<h1>Root Entry Timeline</h1>
+<div class="card">
+    <h3>Content:</h3>
+  <div class="detail">
+    {% for line in entry.content.split('\n') %}
+    <p>{{ line }}</p>
     {% endfor %}
-</pre>
+  </div>
+</div>
+<div class="card">
+    <h3>Timeline:</h3>
+    <div class="detail">
+        {% for child in children %}
+        <a href={{ url_for('entry_detail', dt=child.date.strftime("%d%m%Y%H%M%S")) }} >{{ child.date }}</a><pre>{{ child.content }}</pre>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

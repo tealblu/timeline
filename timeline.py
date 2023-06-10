@@ -37,6 +37,20 @@ class Entry:
             contentList.append(" " * indent + "- " + child.content)
             contentList.extend(child.listChildren(indent=indent + 2))
         return contentList
+    
+    def getChildren(self):
+        return self.children
+    
+    def findParent(self, target_date):
+        if any(child.date.strftime(DATE_FORMAT) == target_date for child in self.children):
+            return self
+        else:
+            for child in self.children:
+                parent = child.findParent(target_date)
+                if parent:
+                    return parent
+        print("NO PARENT")
+        return None
 
     def timeline(self, indent=0):
         timeline = " " * indent + self.date.strftime(READABLE_DATE) + ": " + self.content + "\n"
@@ -67,16 +81,11 @@ def get_entry(entry, datecode):
             result = get_entry(child, datecode)
             if result:
                 return result
-    print("no entry found!")
     return None
-
-# UI
-def load_ui():
-    print("test")
 
 # Globals
 data_filepath = os.path.dirname(os.path.realpath(__file__)) + "\pickled_data.pkl"
-root = None
+root = Entry
 DATE_FORMAT = "%d%m%Y%H%M%S"
 READABLE_DATE = "%d/%m/%Y %H:%M:%S"
 
@@ -91,15 +100,17 @@ def timeline():
     root_init()
     entry = root
 
-    return render_template("timeline.html", content=entry.timeline())
+    return render_template("timeline.html", entry=entry, children=entry.getChildren())
 
 # display entry detail
 # <dt> is a datecode of form DATE_FORMAT
 @app.route('/timeline/entry/<dt>')
 def entry_detail(dt):
     root_init()
+
     entry = get_entry(root, dt)
-    return render_template("entrydetail.html", entry=entry)
+    if entry == root: return redirect(url_for("timeline"))
+    else: return render_template("entrydetail.html", entry=entry, children=entry.getChildren(), parent=root.findParent(entry.date.strftime(DATE_FORMAT)))
 
 # add entry to parent specified by <datecode>
 @app.route('/addentry/<datecode>', methods = ['POST', 'GET'])
