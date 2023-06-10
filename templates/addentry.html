@@ -1,8 +1,8 @@
-<html>
-    <h3>Add Child Entry for {{parent}}</h3>
-    <form action="http://127.0.0.1:8000/addentry/{{parent}}" method="POST">
-        <p>Datecode <input type="text" name="datecode" /></p>
-        <p>Content <textarea name="content" rows="4" cols="50"></textarea></p>
-        <p><input type="submit" value="submit" /></p>
-    </form>
-</html
+{% extends "layout.html" %} {% block content %}
+<h3>Add Child Entry for {{parent}}</h3>
+<form action="http://127.0.0.1:8000/addentry/{{parent}}" method="POST">
+  <p>Datecode <input type="text" name="datecode" /></p>
+  <p>Content <textarea name="content" rows="4" cols="50"></textarea></p>
+  <p><input type="submit" value="submit" /></p>
+</form>
+{% endblock %}

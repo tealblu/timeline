@@ -1,6 +1,6 @@
 import os
 import datetime
-import pickle5 as pickle
+import pickle as pickle
 import sys
 from flask import *
 
@@ -67,6 +67,7 @@ def get_entry(entry, datecode):
             result = get_entry(child, datecode)
             if result:
                 return result
+    print("no entry found!")
     return None
 
 # UI
