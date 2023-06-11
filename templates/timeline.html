@@ -12,7 +12,7 @@
     <h3>Timeline:</h3>
     <div class="detail">
         {% for child in children %}
-        <a href={{ url_for('entry_detail', dt=child.date.strftime("%d%m%Y%H%M%S")) }} >{{ child.date }}</a><pre>{{ child.content }}</pre>
+        <a href={{ url_for('entry_detail', dt=child.getDatecode()) }} >{{ child.getReadableDate() }}</a><pre>{{ child.timeline() }}</pre>
         {% endfor %}
     </div>
 </div>

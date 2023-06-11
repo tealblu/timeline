@@ -1,5 +1,5 @@
 {% extends "layout.html" %} {% block content %}
-<a href="{{url_for('entry_detail', dt=parent.date.strftime("%d%m%Y%H%M%S"))}}"><button>Go Back</button></a>
+<a href="{{url_for('entry_detail', dt=parent.date.strftime("%d%m%Y%H%M%S"))}}"><button class="lower_left_button">Go Back</button></a>
 <h1>Entry Detail: {{ entry.date }}</h1>
 <div class="card">
     <h3>Content:</h3>
@@ -13,7 +13,8 @@
     <h3>Timeline:</h3>
     <div class="detail">
       {% for child in children %}
-      <a href={{ url_for('entry_detail', dt=child.date.strftime("%d%m%Y%H%M%S")) }} >{{ child.date }}</a><pre>{{ child.content }}</pre>
+      <a href={{ url_for('entry_detail', dt=child.getDatecode()) }} >{{ child.getReadableDate() }}</a>
+      <pre>{{ child.timeline() }}</pre>
       {% endfor %}
     </div>
 </div>

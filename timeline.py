@@ -38,7 +38,7 @@ def entry_detail(dt):
 @app.route('/addentry/<datecode>', methods = ['POST', 'GET'])
 def add_entry(datecode):
     root_init()
-    parent = get_entry(root, datecode) # get the parent from the url parameter
+    parent = get_entry(root, datecode) # get the parent from the url parameter {datecode}
 
     if request.method == 'POST': # on form submit
         result = request.form
@@ -50,8 +50,9 @@ def add_entry(datecode):
         root_save()
         return render_template("timeline.html", content=root.timeline())
     else:
-        return render_template("addentry.html", parent=datecode)
+        return render_template("addentry.html", parent=parent)
 
 # run the app
-if __name__ == '__main__':
+if __name__ == '__main__': 
+    root_init() # Always refresh the root variable
     app.run(host='0.0.0.0', port='8000', debug=True)

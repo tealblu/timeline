@@ -1,8 +1,18 @@
 {% extends "layout.html" %} {% block content %}
-<h3>Add Child Entry for {{parent}}</h3>
-<form action="http://127.0.0.1:8000/addentry/{{parent}}" method="POST">
-  <p>Datecode <input type="text" name="datecode" /></p>
-  <p>Content <textarea name="content" rows="4" cols="50"></textarea></p>
-  <p><input type="submit" value="submit" /></p>
-</form>
+<div class="card">
+  <h3>Add Child Entry for Parent: {{parent.getReadableDate()}}</h3>
+  <div class="padding" >
+    <table>
+      <form action="http://127.0.0.1:8000/addentry/{{parent.getDatecode()}}" method="POST">
+        <tr>
+          <td><pre>Datecode</pre></td> <td><input name="datecode" maxlength="19" size="19"/></td>
+        </tr>
+        <tr>
+          <td><pre>Content</pre></td> <td><textarea name="content" class="contentEntry" rows="4" cols="40"></textarea></td>
+        </tr>
+    </table>
+  </div>
+      <pre><input type="submit" value="submit" class="button"/></pre>
+  </form>
+</div>
 {% endblock %}
